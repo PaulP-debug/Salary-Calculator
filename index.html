@@ -1,1 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary Package Calculator</title>
 
+<style>
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f2f4f7;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#004080;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-bottom:5px;
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+.buttons{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+}
+
+button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.calc{background:#007bff;}
+.reset{background:#dc3545;}
+
+.results{
+    margin-top:25px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+td:last-child{
+    text-align:right;
+    font-weight:bold;
+}
+
+.total{
+    background:#dff0d8;
+    font-size:18px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Salary Package Calculator</h1>
+
+<div class="grid">
+
+<div>
+<label>Original Monthly Salary</label>
+<input type="number" id="salary">
+</div>
+
+<div>
+<label>Working Days</label>
+<input type="number" id="days">
+</div>
+
+<div>
+<label>Agent Type</label>
+<select id="agentType">
+    <option value="10">T1 Agent (₱10)</option>
+    <option value="15">T2 Agent (₱15)</option>
+    <option value="20">Risk Control Agent (₱20)</option>
+    <option value="40">VIP Agent (₱40)</option>
+</select>
+</div>
+
+<div>
+<label>Cases Per Day</label>
+<input type="number" id="cases">
+</div>
+
+<div>
+<label>Perfect Attendance</label>
+<select id="attendance">
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+</select>
+</div>
+
+<div>
+<label>Top 10% Performer</label>
+<select id="top10" onchange="toggleFields()">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+</select>
+</div>
+
+<div id="commissionBox">
+<label>Previous Performance Commission (if Top 10%)</label>
+<input type="number" id="commission">
+</div>
+
+<div>
+<label>Night Shifts</label>
+<input type="number" id="night" value="0">
+</div>
+
+</div>
+
+<div class="buttons">
+<button class="calc" onclick="calculate()">Calculate</button>
+<button class="reset" onclick="location.reload()">Reset</button>
+</div>
+
+<div class="results">
+
+<table>
+<tr><td>Adjusted Salary</td><td id="adjusted">₱0.00</td></tr>
+<tr><td>Monthly Fixed Salary</td><td id="fixed">₱0.00</td></tr>
+<tr><td>Attendance Bonus</td><td id="attendanceBonus">₱0.00</td></tr>
+<tr><td>Performance Income</td><td id="performance">₱0.00</td></tr>
+<tr><td>Night Shift Allowance</td><td id="nightPay">₱0.00</td></tr>
+<tr class="total"><td>Total Monthly Payout</td><td id="total">₱0.00</td></tr>
+<tr><td>Annual Service Bonus (Separate)</td><td id="annual">₱0.00</td></tr>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function peso(val){
+return "₱"+val.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function toggleFields(){
+let top=document.getElementById("top10").value;
+
+document.getElementById("commissionBox").style.display=
+top==="yes" ? "block":"none";
+
+document.getElementById("cases").disabled=
+top==="yes";
+}
+
+function calculate(){
+
+let salary=Number(document.getElementById("salary").value);
+let days=Number(document.getElementById("days").value);
+let cases=Number(document.getElementById("cases").value);
+let rate=Number(document.getElementById("agentType").value);
+let attendance=document.getElementById("attendance").value;
+let top=document.getElementById("top10").value;
+let commission=Number(document.getElementById("commission").value);
+let nights=Number(document.getElementById("night").value);
+
+if(!salary||!days){
+alert("Please complete required fields.");
+return;
+}
+
+let adjusted=salary*0.90;
+let fixed=adjusted*0.80;
+let attendanceBonus=attendance==="yes"?adjusted*0.05:0;
+let annual=adjusted*0.15;
+
+let performance=0;
+
+if(top==="yes"){
+performance=(commission/1.3)*10*2;
+}else{
+performance=days*cases*rate;
+}
+
+let nightPay=nights*500;
+
+let total=fixed+attendanceBonus+performance+nightPay;
+
+document.getElementById("adjusted").innerHTML=peso(adjusted);
+document.getElementById("fixed").innerHTML=peso(fixed);
+document.getElementById("attendanceBonus").innerHTML=peso(attendanceBonus);
+document.getElementById("performance").innerHTML=peso(performance);
+document.getElementById("nightPay").innerHTML=peso(nightPay);
+document.getElementById("total").innerHTML=peso(total);
+document.getElementById("annual").innerHTML=peso(annual);
+
+}
+
+</script>
+
+</body>
+</html>
