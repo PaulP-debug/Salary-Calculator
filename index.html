@@ -35,34 +35,39 @@ h1{
     font-size:14px;
 }
 
+/* FIXED GRID SPACING */
 .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:20px;
+    gap:22px 28px;
 }
 
+/* FIELD WRAPPER */
 .field{
     display:flex;
     flex-direction:column;
+    gap:6px;
 }
 
 label{
     font-weight:600;
-    margin-bottom:6px;
     color:#333;
 }
 
-input,select{
+input, select{
     width:100%;
     padding:12px;
-    border:1px solid #ccc;
+    border:1px solid #d0d0d0;
     border-radius:10px;
     font-size:15px;
-    outline:none;
+    background:#fff;
+    transition:0.2s;
 }
 
-input:focus,select:focus{
+input:focus, select:focus{
     border-color:#007bff;
+    box-shadow:0 0 0 3px rgba(0,123,255,0.1);
+    outline:none;
 }
 
 .buttons{
@@ -116,6 +121,13 @@ td:last-child{
     padding:12px;
     border-radius:10px;
     line-height:1.5;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+    .grid{
+        grid-template-columns:1fr;
+    }
 }
 </style>
 
@@ -199,7 +211,7 @@ Internal estimation tool for monthly compensation breakdown
 
 <div class="note">
 <b>Disclaimer:</b><br>
-This tool does not store any data or history.<br>
+This calculator does not store any data or history.<br>
 Results are for estimation purposes only and do not represent official payroll computation or final compensation.
 </div>
 
@@ -211,8 +223,8 @@ Results are for estimation purposes only and do not represent official payroll c
 
 function peso(val){
 return "₱" + val.toLocaleString("en-PH", {
-minimumFractionDigits:2,
-maximumFractionDigits:2
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
 });
 }
 
@@ -237,7 +249,7 @@ let fixed = adjusted * 0.80;
 let attendanceBonus = attendance === "yes" ? adjusted * 0.05 : 0;
 let annual = adjusted * 0.15;
 
-// Performance
+// Performance logic (FIXED)
 let performance = days * cases * rate;
 
 if(top === "yes"){
