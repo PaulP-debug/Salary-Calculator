@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary Package Calculator</title>
+<style>
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f2f4f7;
+    margin:0;
+    padding:20px;
+}
+.container{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    padding:40px;
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.12);
+}
+h1{
+    text-align:center;
+    color:#004080;
+    margin-bottom:5px;
+}
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:25px;
+    font-size:14px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px 28px;
+}
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+label{
+    font-weight:600;
+    color:#333;
+}
+input, select{
+    width:100%;
+    padding:12px;
+    border:1px solid #d0d0d0;
+    border-radius:10px;
+    font-size:15px;
+    background:#fff;
+    transition:0.2s;
+    box-sizing:border-box;
+}
+input:focus, select:focus{
+    border-color:#007bff;
+    box-shadow:0 0 0 3px rgba(0,123,255,0.1);
+    outline:none;
+}
+.field-hint{
+    font-size:12px;
+    color:#888;
+    margin-top:2px;
+}
+.buttons{
+    margin-top:25px;
+    display:flex;
+    gap:12px;
+}
+button{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+.calc{background:#007bff;}
+.reset{background:#dc3545;}
+.results{
+    margin-top:30px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+td{
+    padding:12px 10px;
+    border-bottom:1px solid #eee;
+}
+td:last-child{
+    text-align:right;
+    font-weight:bold;
+}
+.total{
+    background:#e6f4ea;
+    font-size:18px;
+}
+.section-label{
+    background:#f0f4ff;
+    font-size:12px;
+    color:#555;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+}
+.section-label td{
+    font-weight:600;
+    padding:8px 10px 6px;
+}
+.indent td:first-child{
+    padding-left:22px;
+    color:#555;
+}
+.badge{
+    display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:20px;
+    margin-left:8px;
+    vertical-align:middle;
+}
+.badge-green{background:#d4edda;color:#155724;}
+.badge-orange{background:#fff3cd;color:#856404;}
+.badge-red{background:#f8d7da;color:#721c24;}
+.note{
+    margin-top:20px;
+    font-size:13px;
+    color:#666;
+    background:#f9f9f9;
+    padding:12px;
+    border-radius:10px;
+    line-height:1.5;
+}
+.info-box{
+    margin-top:14px;
+    font-size:13px;
+    color:#004080;
+    background:#e8f0fe;
+    border-left:4px solid #007bff;
+    padding:10px 14px;
+    border-radius:0 8px 8px 0;
+    line-height:1.6;
+    display:none;
+}
+@media(max-width:700px){
+    .grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Salary Package Calculator</h1>
+<div class="subtitle">Internal estimation tool for monthly compensation breakdown</div>
+
+<div class="grid">
+
+<div class="field">
+    <label>Original Monthly Salary</label>
+    <input type="number" id="salary" placeholder="e.g. 30000">
+</div>
+
+<div class="field">
+    <label>Month</label>
+    <select id="month">
+        <option value="">— Select month —</option>
+        <option value="1">January (31 days)</option>
+        <option value="2">February (28/29 days)</option>
+        <option value="3">March (31 days)</option>
+        <option value="4">April (30 days)</option>
+        <option value="5">May (31 days)</option>
+        <option value="6">June (30 days)</option>
+        <option value="7">July (31 days)</option>
+        <option value="8">August (31 days)</option>
+        <option value="9">September (30 days)</option>
+        <option value="10">October (31 days)</option>
+        <option value="11">November (30 days)</option>
+        <option value="12">December (31 days)</option>
+    </select>
+    <span class="field-hint">Used for salary proration only</span>
+</div>
+
+<div class="field">
+    <label>Actual Working Days</label>
+    <input type="number" id="workingDays" placeholder="e.g. 20">
+    <span class="field-hint">Days actually worked this month (for commission)</span>
+</div>
+
+<div class="field">
+    <label>Unpaid Leave Taken (days)</label>
+    <select id="unpaidLeave">
+        <option value="0">0 days (no unpaid leave)</option>
+        <option value="1">1 day</option>
+        <option value="1.5">1.5 days</option>
+        <option value="2">2 days</option>
+        <option value="2.5">2.5 days</option>
+        <option value="3">3 days</option>
+        <option value="3.5">3.5 days</option>
+        <option value="4">4 days</option>
+        <option value="4.5">4.5 days</option>
+        <option value="5">5 days</option>
+    </select>
+    <span class="field-hint">≤ 2 days = still qualifies for attendance bonus</span>
+</div>
+
+<div class="field">
+    <label>Agent Type</label>
+    <select id="agentType">
+        <option value="10">T1 Agent (₱10/case)</option>
+        <option value="15">T2 Agent (₱15/case)</option>
+        <option value="20">Risk Control Agent (₱20/case)</option>
+        <option value="40">VIP Agent (₱40/case)</option>
+    </select>
+</div>
+
+<div class="field">
+    <label>Cases Per Day</label>
+    <input type="number" id="cases" placeholder="e.g. 50">
+</div>
+
+<div class="field">
+    <label>Top 10% Performer</label>
+    <select id="top10">
+        <option value="no">No</option>
+        <option value="yes">Yes (2× performance pay)</option>
+    </select>
+</div>
+
+<div class="field">
+    <label>Night Shifts</label>
+    <input type="number" id="night" value="0" min="0">
+</div>
+
+</div>
+
+<div class="buttons">
+    <button class="calc" onclick="calculate()">Calculate</button>
+    <button class="reset" onclick="location.reload()">Reset</button>
+</div>
+
+<div id="infoBox" class="info-box"></div>
+
+<div class="results">
+<table>
+    <tr class="section-label"><td colspan="2">Salary Basis</td></tr>
+    <tr class="indent"><td>Total calendar days in month</td><td id="totalDays">—</td></tr>
+    <tr class="indent"><td>Unpaid leave days</td><td id="unpaidDaysOut">—</td></tr>
+    <tr class="indent"><td>Rest day deduction (prorated)</td><td id="restDeduction">—</td></tr>
+    <tr class="indent"><td>Payable days</td><td id="payableDays">—</td></tr>
+
+    <tr class="section-label"><td colspan="2">Salary Breakdown</td></tr>
+    <tr class="indent"><td>Adjusted salary (salary × 0.90)</td><td id="adjusted">₱0.00</td></tr>
+    <tr class="indent"><td>Monthly fixed salary (adjusted × 0.80)</td><td id="fixed">₱0.00</td></tr>
+    <tr class="indent"><td>Fixed salary after unpaid deduction</td><td id="fixedProrated">₱0.00</td></tr>
+    <tr class="indent"><td>Attendance bonus (adjusted × 0.05)</td><td id="attendanceBonus">₱0.00</td></tr>
+
+    <tr class="section-label"><td colspan="2">Commission & Allowances</td></tr>
+    <tr class="indent"><td id="perfLabel">Performance income</td><td id="performance">₱0.00</td></tr>
+    <tr class="indent"><td>Night shift allowance</td><td id="nightPay">₱0.00</td></tr>
+
+    <tr class="total"><td>Total Monthly Payout</td><td id="total">₱0.00</td></tr>
+    <tr class="indent"><td>Annual service bonus (paid separately in April)</td><td id="annual">₱0.00</td></tr>
+</table>
+
+<div class="note">
+    <b>Disclaimer:</b><br>
+    This calculator does not store any data or history.<br>
+    Results are for estimation purposes only and do not represent official payroll computation or final compensation.<br><br>
+    <b>How the calculation works:</b><br>
+    • <b>Salary proration:</b> Fixed salary is divided by total calendar days × payable days (calendar days − unpaid leave − rest day deduction).<br>
+    • <b>Rest day deduction:</b> 0.4 days per unpaid leave day taken (e.g. 2 unpaid days → 0.8 rest day deduction).<br>
+    • <b>Attendance bonus:</b> Retained if unpaid leave ≤ 2 days.<br>
+    • <b>Performance commission:</b> Based on actual working days entered × cases per day × rate. Not affected by rest day deductions.
+</div>
+</div>
+
+</div>
+
+<script>
+
+const MONTH_DAYS = {
+    1:31, 2:28, 3:31, 4:30, 5:31, 6:30,
+    7:31, 8:31, 9:30, 10:31, 11:30, 12:31
+};
+
+const REST_DEDUCTION = {
+    0:0, 1:0.4, 1.5:0.6, 2:0.8,
+    2.5:1.0, 3:1.2, 3.5:1.4,
+    4:1.6, 4.5:1.8, 5:2.0
+};
+
+function getDaysInMonth(month){
+    if(month === 2){
+        const yr = new Date().getFullYear();
+        return (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0)) ? 29 : 28;
+    }
+    return MONTH_DAYS[month];
+}
+
+function peso(val){
+    return "₱" + val.toLocaleString("en-PH",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    });
+}
+
+function calculate(){
+    const salary      = Number(document.getElementById("salary").value);
+    const month       = Number(document.getElementById("month").value);
+    const workingDays = Number(document.getElementById("workingDays").value);
+    const cases       = Number(document.getElementById("cases").value);
+    const rate        = Number(document.getElementById("agentType").value);
+    const unpaid      = Number(document.getElementById("unpaidLeave").value);
+    const top         = document.getElementById("top10").value;
+    const nights      = Number(document.getElementById("night").value);
+
+    if(!salary || !month || !workingDays || !cases){
+        alert("Please complete all required fields: salary, month, working days, and cases per day.");
+        return;
+    }
+
+    // ── Calendar days for this month ─────────────────────────────────────
+    const totalDays = getDaysInMonth(month);
+
+    // ── Rest day deduction (prorated paid rest days) ──────────────────────
+    const restDed = REST_DEDUCTION[unpaid] ?? 0;
+
+    // ── Payable days (used for salary proration only) ─────────────────────
+    // Formula: total calendar days − unpaid leave − rest day deduction
+    const payableDays = totalDays - unpaid - restDed;
+
+    // ── Step 1: Adjust salary by 10% ──────────────────────────────────────
+    const adjusted = salary * 0.90;
+
+    // ── Step 2: Fixed salary = 80% of adjusted ───────────────────────────
+    const fixed = adjusted * 0.80;
+
+    // ── Step 3: Prorate fixed salary for unpaid leave ─────────────────────
+    // Applied AFTER the 80/20 structure cut, on the fixed component only
+    // If no unpaid leave, fixedProrated = fixed (no change)
+    const fixedProrated = unpaid > 0 ? (fixed / totalDays) * payableDays : fixed;
+
+    // ── Step 4: Annual service bonus (displayed separately, not in total) ──
+    const annual = adjusted * 0.15;
+
+    // ── Attendance bonus ──────────────────────────────────────────────────
+    // ≤ 2 days unpaid leave → still qualifies (treated as perfect attendance)
+    const qualifiesAttendance = unpaid <= 2;
+    const attendanceBonus = qualifiesAttendance ? adjusted * 0.05 : 0;
+
+    // ── Performance commission ────────────────────────────────────────────
+    // Uses actual working days entered by user (not calendar days)
+    // Document formula: cases/day × working days × rate
+    // Top 10%: entire performance income × 2
+    let performance = cases * workingDays * rate;
+    if(top === "yes") performance *= 2;
+
+    // ── Night shift allowance ─────────────────────────────────────────────
+    const nightPay = nights * 500;
+
+    // ── Total monthly payout ──────────────────────────────────────────────
+    const total = fixedProrated + attendanceBonus + performance + nightPay;
+
+    // ── Attendance badge ──────────────────────────────────────────────────
+    let attendBadge = "";
+    if(unpaid === 0){
+        attendBadge = '<span class="badge badge-green">Perfect attendance</span>';
+    } else if(unpaid <= 2){
+        attendBadge = '<span class="badge badge-orange">Qualifies for bonus (≤ 2 days)</span>';
+    } else {
+        attendBadge = '<span class="badge badge-red">No attendance bonus</span>';
+    }
+
+    // ── Render results ────────────────────────────────────────────────────
+    document.getElementById("totalDays").textContent     = totalDays + " days";
+    document.getElementById("unpaidDaysOut").textContent = unpaid > 0 ? "− " + unpaid + " day(s)" : "None";
+    document.getElementById("restDeduction").textContent = unpaid > 0 ? "− " + restDed + " day(s)" : "—";
+    document.getElementById("payableDays").textContent   = payableDays.toFixed(1) + " days";
+
+    document.getElementById("adjusted").innerHTML        = peso(adjusted);
+    document.getElementById("fixed").innerHTML           = peso(fixed);
+    document.getElementById("fixedProrated").innerHTML   = unpaid > 0 ? peso(fixedProrated) : peso(fixed) + ' <span class="badge badge-green">No deduction</span>';
+    document.getElementById("attendanceBonus").innerHTML = peso(attendanceBonus) + attendBadge;
+
+    const perfNote = top === "yes" ? " (2× top performer)" : "";
+    document.getElementById("perfLabel").innerHTML       = "Performance income" + perfNote;
+    document.getElementById("performance").innerHTML     = peso(performance);
+    document.getElementById("nightPay").innerHTML        = peso(nightPay);
+    document.getElementById("total").innerHTML           = peso(total);
+    document.getElementById("annual").innerHTML          = peso(annual);
+
+    // ── Info box: show formula breakdown ─────────────────────────────────
+    const infoBox = document.getElementById("infoBox");
+    const monthName = new Date(2024, month - 1, 1).toLocaleString("en-PH", {month:"long"});
+    const totalCases = cases * workingDays;
+
+    let msg = `<b>${monthName} breakdown:</b><br>`;
+
+    if(unpaid > 0){
+        msg += `Payable days: ${totalDays} − ${unpaid} (unpaid) − ${restDed} (rest day deduction) = <b>${payableDays.toFixed(1)} days</b><br>`;
+        msg += `Fixed salary: ${peso(fixed)} ÷ ${totalDays} × ${payableDays.toFixed(1)} = <b>${peso(fixedProrated)}</b><br>`;
+        if(unpaid <= 2){
+            msg += `Attendance bonus: <b>retained</b> (unpaid leave ≤ 2 days)<br>`;
+        } else {
+            msg += `Attendance bonus: <b>forfeited</b> (unpaid leave > 2 days)<br>`;
+        }
+    } else {
+        msg += `No unpaid leave — full fixed salary applies.<br>`;
+    }
+
+    msg += `Performance: ${cases} cases/day × ${workingDays} working days × ₱${rate}/case`;
+    if(top === "yes") msg += ` × 2 (top 10%)`;
+    msg += ` = <b>${peso(performance)}</b><br>`;
+    msg += `Total cases processed: <b>${totalCases.toLocaleString()}</b>`;
+
+    infoBox.innerHTML = msg;
+    infoBox.style.display = "block";
+}
+
+// Leap year label for February
+(function(){
+    const yr = new Date().getFullYear();
+    const isLeap = (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
+    if(isLeap){
+        const opt = document.querySelector('#month option[value="2"]');
+        if(opt) opt.textContent = "February (29 days — leap year)";
+    }
+})();
+
+</script>
+</body>
+</html>
